@@ -59,7 +59,7 @@ export default function Home() {
               value="Save to History" />
           </div>
           : <div />)}
-        {(showInputErrorMessage ? <p>There's something wrong with your equation.</p> : <div />)}
+        {(showInputErrorMessage ? <p>There&apos;s something wrong with your equation.</p> : <div />)}
         <br />
       </div>
       <div className={styles.historyContainer}>
