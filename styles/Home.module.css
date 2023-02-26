@@ -13,10 +13,12 @@
     font-weight: bolder;
     flex-grow: 2;
     align-items: center;
-    justify-content: center;
+    text-align: center;
+    justify-content: flex-end;
+    margin-bottom: 24px;
 }
 
-.resultContainer, .historyItem { 
+.resultContainer { 
     flex-direction: row;
     display: flex;
     width: 400px;
@@ -24,20 +26,11 @@
     justify-content: space-between;
 }
 
-.historyContainer {
-    flex-direction: column;
-    display: flex;
-    height: 200px;
-    align-items: center;
-    flex-grow: 5;
-    justify-content: flex-start;
-}
-
 .inputContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-grow: 1;
     height: 260px;
 }

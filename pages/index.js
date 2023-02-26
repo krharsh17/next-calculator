@@ -2,40 +2,31 @@ import { useEffect, useState } from 'react'
 import styles from "../styles/Home.module.css"
 
 export default function Home() {
+  // State containers
   const [equation, setEquation] = useState("")
   const [result, setResult] = useState("")
   const [showInputErrorMessage, setShowInputErrorMessage] = useState(false)
-  const [history, setHistory] = useState([])
 
+  // Effect that calls the `calculate` API whenever the user updates the equation
   useEffect(() => {
-    try {
-      setShowInputErrorMessage(false)
-      setResult(eval(equation))
-    } catch (e) {
-      setShowInputErrorMessage(e instanceof ReferenceError || e instanceof SyntaxError)
-    }
-
-  }, [equation])
-
-  const onSavePressed = () => {
-    setHistory([...history, result])
-    fetch("/api/results/save", {
+    setShowInputErrorMessage(false)
+    fetch("/api/calculate", {
       method: "POST",
-      body: JSON.stringify({ data: result })
+      body: JSON.stringify({ equation })
     })
-    .then(() => {
-      console.log("request sent")
-    })
-    // Save to db
-  }
-
-  useEffect(() => {
-    fetch("/api/results/fetchAll")
       .then(res => res.json())
       .then(res => {
-        setHistory(res?.data?.results)
+        // If the calculation was successful, show the result
+        if ("successful" === res.message) {
+          setResult(res.result)
+        } else {
+          // else, show an error message
+          setShowInputErrorMessage(true)
+        }
+
       })
-  }, [])
+  // This effect runs whenever the `equation` state container is updated
+  }, [equation])
 
   return (
     <div className={styles.mainContainer}>
@@ -43,41 +34,21 @@ export default function Home() {
         <div>The Modern Calculator</div>
       </div>
       <div className={styles.inputContainer}>
+        {/* Input box for the equation */}
         <input
           value={equation}
           placeholder="Enter your equation here"
           onChange={ev => setEquation(ev.target.value)}
           className={styles.inputBox} />
-        <br />
+          {/* Result text */}
         {(!showInputErrorMessage && result ?
           <div className={styles.resultContainer}>
             <p>Result: <b>{result}</b></p>
-            <input
-              className={styles.inputButton}
-              type="button"
-              onClick={onSavePressed}
-              value="Save to History" />
           </div>
           : <div />)}
-        {(showInputErrorMessage ? <p>There&apos;s something wrong with your equation.</p> : <div />)}
+          {/* Error text */}
+        {(showInputErrorMessage ? <p>There&apos;s something wrong with your equation (maybe it&apos;s incomplete?)</p> : <div />)}
         <br />
-      </div>
-      <div className={styles.historyContainer}>
-        {(history?.length > 0 ? <p>Saved Results</p> : <p />)}
-        {(
-          history?.slice(-5).reverse().map(elem => {
-            return <div className={styles.historyItem} key={elem}>
-              <p>{elem}</p>
-              <input
-                className={styles.inputButton}
-                type="button"
-                onClick={() => {
-                  setEquation(equation + elem)
-                }}
-                value="Copy" />
-            </div>
-          })
-        )}
       </div>
     </div>
   )
